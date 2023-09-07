@@ -3,8 +3,8 @@ import numpy as np
 from scipy.signal import argrelextrema
 from sklearn.neighbors._kde import KernelDensity
 from utils import add_noise
-from random import gauss
-import os
+
+import matplotlib.pyplot as plt
 
 foldername = 'FalconSimulation'
 classname = 'Falcon'
@@ -24,18 +24,46 @@ index = 68
 for index in range(68, 69):
 
     success = 0
-    for i in range(nb_tests//nb_challenges):
+    for i in range(10):
 
         challenges = simulation.get_random_challenges(nb_challenges)
         simulation.set_challenges(challenges)
         simulation.run()
-
+        
         traces = simulation.get_traces()
         out = simulation.get_printed_data(False)
         
-        print(traces)
-        print()
-        print(out)
+        #=============   add noise version   ==============
+        add_noise_flag = 1
+        
+        print(traces[2]) # For test
+        ratio = 0.01
+        
+        if add_noise_flag == 1 :
+            for j in range(len(traces)):
+                sigma = np.mean(traces[j][:,]) * ratio
+                sigma = 10 #sigma - hyper parameter
+                add_noise(traces[j], sigma)
+                if j == 2 :
+                    print(sigma)
+        print(traces[2])
+        
+        #===========   End of noise version   =============
+        
+
+        with open("test_traces312412412.txt", "a") as file:
+            np.savetxt(file, traces, fmt='%.8f', delimiter=',')
+        with open("test_out3124124142.txt", "a") as file:
+            np.savetxt(file, out, fmt='%d', delimiter=',')
+            
+        '''
+        if i == 1 :
+            subset_traces = traces[:, :]
+            for i in range(subset_traces.shape[0]):
+                plt.plot(subset_traces[i, :], label=f"Row {i + 1}")
+            plt.show()
+        '''
+        
         """
         for j in range(nb_challenges):
             # for t in traces[j*18:(j+1)*18]:
